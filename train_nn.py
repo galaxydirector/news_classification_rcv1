@@ -26,12 +26,13 @@ model.compile(optimizer='adagrad',
 callback_list = prepare_callbacks(
 		model_folder, 
 		test_name)
-model.fit(data, one_hot_labels, epochs=10, batch_size=32)
-model.fit_generator(generator, 
-	steps_per_epoch=None, 
-	epochs=5, 
+model.fit(data, 
+	one_hot_labels, 
+	epochs=10, 
 	verbose=1, 
-	callbacks=None)
+	batch_size=32,
+	callbacks = callback_list)
+
 
 
 ####################################################
