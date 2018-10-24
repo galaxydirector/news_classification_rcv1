@@ -1,7 +1,7 @@
 # train neural nets
 
 
-from neural_nets import MLP
+from neural_nets import MLP, prepare_callbacks
 import keras
 
 
@@ -27,4 +27,8 @@ callback_list = prepare_callbacks(
 		input_shape,
 		tr_params, 
 		test_params)
-model.fit_generator()
+model.fit_generator(generator, 
+	steps_per_epoch=None, 
+	epochs=5, 
+	verbose=1, 
+	callbacks=None)

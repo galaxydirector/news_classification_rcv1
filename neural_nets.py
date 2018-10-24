@@ -7,6 +7,7 @@ from keras import optimizers
 from keras.models import Model
 from keras.layers import Input, merge, Dense, BatchNormalization, Activation, Dropout, Flatten
 from keras.callbacks import ModelCheckpoint, TensorBoard, EarlyStopping
+from keras.callbacks import ReduceLROnPlateau, ModelCheckpoint, CSVLogger, TensorBoard
 
 model_params = {'input_shape': (),
 				'nb_filters': 100,
@@ -38,3 +39,39 @@ class MLP(object):
 		out = Dense(output_classes, activation='softmax')(out)
 
 		return input, out
+
+def prepare_callbacks(model_folder, test_name, input_shape, tr_params, test_params, use_adaptive_optimzer=True, validate_model=False, val_data=None):
+	reduce_lr = ReduceLROnPlateau(monitor='loss', factor=0.2, patience=5, min_lr=0.000001, verbose=1, mode="min")
+	
+	model_name = "weights_{epoch:05d}.hdf5"
+	saved_model_path = model_folder+'/'+model_name
+	csv_log_name = "training_log.csv"
+
+	save_chkpt = ModelCheckpoint(
+		saved_model_path,
+		verbose=1,
+		save_best_only=False,
+		monitor='loss',
+		mode='auto',
+		period=tr_params["save_per_step"]
+	)
+
+	tr_logger = CSVLogger(model_folder+'/'+csv_log_name, separator=',', append=True)
+	# tensorboard = TensorBoard(
+	# 	log_dir=model_folder, 
+	# 	histogram_freq=5,
+	# 	write_graph=True, 
+	# 	write_images=True,
+	# 	embeddings_freq=0
+	# )
+
+	if use_adaptive_optimzer:
+		callback_list = [save_chkpt, tr_logger]
+	else:	
+		callback_list = [reduce_lr, save_chkpt, tr_logger]
+
+	if validate_model and (val_data is not None):
+		val_callback = ValidationCallback(val_data, input_shape, trg_params['sample_per_period'])
+		callback_list.append(val_callback)
+	
+	return callback_list
