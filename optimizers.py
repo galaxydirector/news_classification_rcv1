@@ -5,7 +5,7 @@ def PEGASOS():
 
 	return
 
-def adagrad():
+def adagrad(w, prediction, target, learning_r):
 
-	return
 	
+	return
