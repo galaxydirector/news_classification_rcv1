@@ -1,7 +1,8 @@
 # train neural nets
 
 
-
+from neural_nets import MLP
+import keras
 
 
 # produce a list of parameters
