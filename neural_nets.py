@@ -40,8 +40,7 @@ class MLP(object):
 
 		return input, out
 
-def prepare_callbacks(model_folder, test_name, input_shape, tr_params, test_params, use_adaptive_optimzer=True, validate_model=False, val_data=None):
-	reduce_lr = ReduceLROnPlateau(monitor='loss', factor=0.2, patience=5, min_lr=0.000001, verbose=1, mode="min")
+def prepare_callbacks(model_folder, test_name, use_adaptive_optimzer=True):
 	
 	model_name = "weights_{epoch:05d}.hdf5"
 	saved_model_path = model_folder+'/'+model_name
@@ -53,7 +52,7 @@ def prepare_callbacks(model_folder, test_name, input_shape, tr_params, test_para
 		save_best_only=False,
 		monitor='loss',
 		mode='auto',
-		period=tr_params["save_per_step"]
+		period=2
 	)
 
 	tr_logger = CSVLogger(model_folder+'/'+csv_log_name, separator=',', append=True)
@@ -66,12 +65,9 @@ def prepare_callbacks(model_folder, test_name, input_shape, tr_params, test_para
 	# )
 
 	if use_adaptive_optimzer:
-		callback_list = [save_chkpt, tr_logger]
-	else:	
+		reduce_lr = ReduceLROnPlateau(monitor='loss', factor=0.2, patience=5, min_lr=0.000001, verbose=1, mode="min")
 		callback_list = [reduce_lr, save_chkpt, tr_logger]
-
-	if validate_model and (val_data is not None):
-		val_callback = ValidationCallback(val_data, input_shape, trg_params['sample_per_period'])
-		callback_list.append(val_callback)
+	else:
+		callback_list = [save_chkpt, tr_logger]
 	
 	return callback_list
