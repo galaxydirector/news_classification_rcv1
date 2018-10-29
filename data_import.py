@@ -18,3 +18,18 @@ for i in negative_ind:
     new_target[i] = -1
 
 new_rcv1 = sparse.hstack([rcv1['data'],new_target.reshape(-1,1)]) #804414x47237
+
+if __name__ == '__main__':
+	arr_data = new_rcv1.toarray()
+
+	# shuffle the dataset
+	
+	# split data
+	training, test = arr_data[], arr_data[]
+
+	# split x and y
+	train_x = training[:,:-1]
+	train_y = training[:,-1]
+	
+	test_x = training[:,:-1]
+	test_y = training[:,-1]
