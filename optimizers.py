@@ -40,11 +40,6 @@ def adagrad(w, prediction, target, lr):
 
 	return
 
-
-
-
-
-
 def PEGASOS_tf(x,y,T,lamb): #################################################### developing
 	# tensorflow version of PEGASOS algorithm
 
@@ -73,15 +68,17 @@ def PEGASOS_tf(x,y,T,lamb): ####################################################
 
 	init = tf.global_variables_initializer()
 	with tf.Session() as sess:
-	    sess.run(init)
-
+		sess.run(init)
 		for i in range(T):
-			new_w = sess.run(update_w, feed_dict = {sub_x: x[i:(i+row_per_update),:],\
-													sub_y: y[i:(i+row_per_update),:],\
-													ite:   i})
+			new_w = sess.run(update_w, feed_dict = {sub_x: x[i:(i+row_per_update),:],sub_y: y[i:(i+row_per_update),:],ite:i})
 
 	return new_w
 
 
-# # initialize variables
-# x = tf.variables()	
+if __name__ == '__main__':
+	from data_import import import_data, data_set
+	new_rcv1 = import_data()
+	train_x, train_y, _, _ = data_set(new_rcv1)
+
+	weight = PEGASOS(train_x,train_y,T=100,lamb=0.01)
+	print(weight.shape)
