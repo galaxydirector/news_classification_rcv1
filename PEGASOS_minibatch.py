@@ -4,6 +4,7 @@ import random
 
 def PEGASOS(x,y,T,lamb,k):
 	'''
+	reference: https://www.cs.huji.ac.il/~shais/papers/ShalevSiSrCo10.pdf
 	x: m x d data
 	y: m x 1 label
 	T: max iterations
