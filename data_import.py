@@ -20,29 +20,48 @@ def import_data():
 	    new_target[i] = -1
 
 	new_rcv1 = sparse.hstack([rcv1['data'],new_target.reshape(-1,1)]) #804414x47237
+	csr_data = new_rcv1.tocsr()
 
-	return new_rcv1
+	return csr_data
 
-def data_set(sparse_data):
+def generate_sets(sparse_data):
+	# input sparse data, output numpy array
 	arr_data = sparse_data.toarray()
 
 	# split data
 	training, test = arr_data[:100000,:], arr_data[100000:,:]
 
-	training = numpy.random.shuffle(training)
-
 	# split x and y
 	train_x = training[:,:-1]
-	train_y = training[:,-1]
+	train_y = training[:,-1].reshape(-1,1)
 	
 	test_x = training[:,:-1]
-	test_y = training[:,-1]
+	test_y = training[:,-1].reshape(-1,1)
 
 	return train_x, train_y, test_x, test_y
+
+def dense_data_generator(csr_data,T):
+	"""args: data must be csr form"""
+
+	# shuffle the data
+	# print(type(csr_data.get_shape()[0]))
+	n_rows = csr_data.get_shape()[0]
+	shuffled_ind = np.array(range(n_rows))
+	np.random.shuffle(shuffled_ind)
+	shuffled = csr_data[shuffled_ind,:]
+
+	row_per_update = n_rows // T
+
+	for i in range(T):
+		train_x, train_y, test_x, test_y = generate_sets(shuffled[i:(i+row_per_update),:])
+
+		yield train_x, train_y, test_x, test_y
 
 
 
 if __name__ == '__main__':
-	main()
+	csr_data = import_data()
 
-	
+	kkk = dense_data_generator(csr_data, 10000)
+	fucker = next(kkk)
+	print(fucker[0])

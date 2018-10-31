@@ -3,7 +3,7 @@
 import numpy as np
 
 
-def PEGASOS(x,y,T,lamb):
+def PEGASOS_old(x,y,T,lamb):
 	# lamb would be chosen from 0.0001, 0.001, 0.01, 0.1, 1, 10, 100
 
 	# initialize a w with normal of std = 0.01
@@ -31,6 +31,43 @@ def PEGASOS(x,y,T,lamb):
 		w = np.minimum(1,1/np.sqrt(lamb)/np.sqrt(sum([i**2 for i in raw_w])))*raw_w
 
 	return w
+
+def PEGASOS(data_gen, lamb, n_features):
+	# lamb would be chosen from 0.0001, 0.001, 0.01, 0.1, 1, 10, 100
+
+	# initialize a w with normal of std = 0.01
+	w = 0.01*np.random.randn(n_features,1)/np.sqrt(lamb) # start with very small numbers with mean of 0
+
+	for i, (sub_x, sub_y, _, _) in enumerate(data_gen,1):
+		# note: numpy matmul is equivalent to dot
+		# while numpy multipy is equivalent to *, which is element wise
+		
+		output = np.matmul(sub_x,w)*sub_y
+		output_ind = output<0
+		output_ind = output_ind.reshape(-1)
+
+		total_loss = sum(np.multiply(sub_y[output_ind],sub_x[output_ind]))
+		gradient = lamb*w - np.divide(total_loss,sub_x.shape[0]) 
+
+		lr = 1/(i*lamb)
+
+		raw_w = w - lr*gradient
+		w = np.minimum(1,1/np.sqrt(lamb)/np.sqrt(sum([j**2 for j in raw_w])))*raw_w
+
+	return w
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 def adagrad(w, prediction, target, lr):
@@ -76,9 +113,10 @@ def PEGASOS_tf(x,y,T,lamb): ####################################################
 
 
 if __name__ == '__main__':
-	from data_import import import_data, data_set
-	new_rcv1 = import_data()
-	train_x, train_y, _, _ = data_set(new_rcv1)
+	from data_import import * 
 
-	weight = PEGASOS(train_x,train_y,T=100,lamb=0.01)
-	print(weight.shape)
+	csr_data = import_data()
+	data_gen = dense_data_generator(csr_data, 10000)
+	w = PEGASOS(data_gen, lamb=0.01, n_features = csr_data.get_shape()[1]-1)
+
+	print(w)
