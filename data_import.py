@@ -2,6 +2,7 @@
 
 from sklearn.datasets import fetch_rcv1
 from scipy import sparse
+from scipy.sparse import csr_matrix
 import numpy as np
 
 def import_data():
@@ -37,6 +38,23 @@ def generate_sets(sparse_data):
 	
 	test_x = training[:,:-1]
 	test_y = training[:,-1].reshape(-1,1)
+
+	return train_x, train_y, test_x, test_y
+
+def data_set_sparse(sparse_data):
+	'''
+	reference: https://stackoverflow.com/questions/13843352/what-is-the-fastest-way-to-slice-a-scipy-sparse-matrix
+	sparse_data: coo_matrix input
+	return: train_x, train_y, test_x, test_y as csr_matrix, which supports slicing
+	'''
+	row_sparse_data = csr_matrix(sparse_data)
+	training, test = row_sparse_data[:100000,:], row_sparse_data[100000:,:]
+	# split x and y
+	train_x = training[:,:-1]
+	train_y = training[:,-1]
+	
+	test_x = test[:,:-1]
+	test_y = test[:,-1]
 
 	return train_x, train_y, test_x, test_y
 
