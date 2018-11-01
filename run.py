@@ -12,8 +12,8 @@ print(test_y.shape)
 print("Datasets Imported. Time: "+str(int(time.time()-start))+" seconds.")
 s = time.time()
 # PEGASOS with minibatch
-T = 10000
-lamb = 0.01
+T = 2000
+lamb = 0.000001
 w = PEGASOS(train_x,train_y,T,lamb,test_x,test_y)
 print("PEGASOS Completed. Time: "+str(int(time.time()-s))+" seconds.")
 

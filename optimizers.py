@@ -60,10 +60,10 @@ def PEGASOS(train_x,train_y,T,lamb,test_x,test_y):
 		raw_w = w - lr*gradient
 		w = np.minimum(1,1/np.sqrt(lamb)/np.sqrt(sum([j**2 for j in raw_w])))*raw_w
 		
-		if i%100==0:
-			print(str(i)+" Iterations Completed.")
-			acc = get_accuracy(test_x,test_y,w)
-			print("Current test accuracy is: "+str(acc))
+		#if i%100==0:
+		print(str(i)+" Iterations Completed.")
+		acc = get_accuracy(test_x,test_y,w)
+		print("Current test accuracy is: "+str(acc))
 
 	return w
 
