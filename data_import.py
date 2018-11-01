@@ -25,30 +25,14 @@ def import_data():
 
 	return csr_data
 
-def generate_sets(sparse_data):
-	# input sparse data, output numpy array
-	arr_data = sparse_data.toarray()
-
-	# split data
-	training, test = arr_data[:100000,:], arr_data[100000:,:]
-
-	# split x and y
-	train_x = training[:,:-1]
-	train_y = training[:,-1].reshape(-1,1)
-	
-	test_x = training[:,:-1]
-	test_y = training[:,-1].reshape(-1,1)
-
-	return train_x, train_y, test_x, test_y
 
 def data_set_sparse(sparse_data):
 	'''
 	reference: https://stackoverflow.com/questions/13843352/what-is-the-fastest-way-to-slice-a-scipy-sparse-matrix
-	sparse_data: coo_matrix input
+	sparse_data: csr_matrix input
 	return: train_x, train_y, test_x, test_y as csr_matrix, which supports slicing
 	'''
-	row_sparse_data = csr_matrix(sparse_data)
-	training, test = row_sparse_data[:100000,:], row_sparse_data[100000:,:]
+	training, test = sparse_data[:100000,:], sparse_data[100000:,:]
 	# split x and y
 	train_x = training[:,:-1]
 	train_y = training[:,-1]
@@ -58,28 +42,31 @@ def data_set_sparse(sparse_data):
 
 	return train_x, train_y, test_x, test_y
 
-def dense_data_generator(csr_data,T):
+def dense_data_generator(x_data,y_data,T):
 	"""args: data must be csr form"""
 
 	# shuffle the data
 	# print(type(csr_data.get_shape()[0]))
-	n_rows = csr_data.get_shape()[0]
+	n_rows = x_data.get_shape()[0]
 	shuffled_ind = np.array(range(n_rows))
 	np.random.shuffle(shuffled_ind)
-	shuffled = csr_data[shuffled_ind,:]
+	shuffled_x = x_data[shuffled_ind,:]
+	shuffled_y = y_data[shuffled_ind,:]
 
 	row_per_update = n_rows // T
+	#row_per_update = batch_size
+	batch = [row_per_update*i for i in range(T)]
 
-	for i in range(T):
-		train_x, train_y, test_x, test_y = generate_sets(shuffled[i:(i+row_per_update),:])
-
-		yield train_x, train_y, test_x, test_y
+	for i in batch:
+		#print(i)
+		sub_x = shuffled_x[i:(i+row_per_update),:]
+		sub_y = shuffled_y[i:(i+row_per_update),:]
+		yield (sub_x.toarray(),sub_y.toarray())
 
 
 
 if __name__ == '__main__':
 	csr_data = import_data()
-
 	kkk = dense_data_generator(csr_data, 10000)
 	fucker = next(kkk)
 	print(fucker[0])

@@ -1,6 +1,8 @@
 # PEGASOS ALGO
 # ADAGRAD ALGO
 import numpy as np
+from data_import import *
+from accuracy import *
 
 
 def PEGASOS_old(x,y,T,lamb):
@@ -8,6 +10,7 @@ def PEGASOS_old(x,y,T,lamb):
 
 	# initialize a w with normal of std = 0.01
 	w = 0.01*np.random.randn(x.shape[1],1)/np.sqrt(lamb) # start with very small numbers with mean of 0
+
 	row_per_update = x.shape[0] // T
 
 	for i in range(T):
@@ -32,27 +35,35 @@ def PEGASOS_old(x,y,T,lamb):
 
 	return w
 
-def PEGASOS(data_gen, lamb, n_features):
+def PEGASOS(train_x,train_y,T,lamb,test_x,test_y):
 	# lamb would be chosen from 0.0001, 0.001, 0.01, 0.1, 1, 10, 100
 
 	# initialize a w with normal of std = 0.01
-	w = 0.01*np.random.randn(n_features,1)/np.sqrt(lamb) # start with very small numbers with mean of 0
-
-	for i, (sub_x, sub_y, _, _) in enumerate(data_gen,1):
+	w = 0.01*np.random.randn(train_x.shape[1],1)/np.sqrt(lamb) # start with very small numbers with mean of 0
+	acc = get_accuracy(test_x,test_y,w)
+	print("Current test accuracy is: "+str(acc))
+	# initialize the generator
+	data_gen = dense_data_generator(train_x,train_y,T)
+	for i in range(1,T+1):
+		sub_next = next(data_gen)
+		sub_x = sub_next[0]
+		sub_y = sub_next[1]
 		# note: numpy matmul is equivalent to dot
 		# while numpy multipy is equivalent to *, which is element wise
-		
 		output = np.matmul(sub_x,w)*sub_y
-		output_ind = output<0
+		output_ind = output<1
 		output_ind = output_ind.reshape(-1)
-
-		total_loss = sum(np.multiply(sub_y[output_ind],sub_x[output_ind]))
+		total_loss = np.sum(np.multiply(sub_y[output_ind],sub_x[output_ind]),axis=0)
+		total_loss = total_loss.reshape((total_loss.shape[0],1))
 		gradient = lamb*w - np.divide(total_loss,sub_x.shape[0]) 
-
 		lr = 1/(i*lamb)
-
 		raw_w = w - lr*gradient
 		w = np.minimum(1,1/np.sqrt(lamb)/np.sqrt(sum([j**2 for j in raw_w])))*raw_w
+		
+		if i%100==0:
+			print(str(i)+" Iterations Completed.")
+			acc = get_accuracy(test_x,test_y,w)
+			print("Current test accuracy is: "+str(acc))
 
 	return w
 
