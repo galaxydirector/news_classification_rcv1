@@ -35,7 +35,7 @@ for nb_layer in range(1,2): # no more than 6 layers
 	# 	verbose=1, 
 	# 	batch_size=32,
 	# 	callbacks = callback_list)
-	generator = dense_data_generator(train_x,train_y, T = None, one_hot=True)
+	generator = onehot_data_generator(train_x,train_y)
 
 
 	model.fit_generator(generator, 
@@ -43,7 +43,7 @@ for nb_layer in range(1,2): # no more than 6 layers
 		epochs=5, 
 		verbose=1, 
 		callbacks=None,
-		max_queue_size=32, 
+		max_queue_size=1000, 
 		workers=1, 
 		use_multiprocessing=False)
 

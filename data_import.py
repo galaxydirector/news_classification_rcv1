@@ -3,6 +3,7 @@
 from sklearn.datasets import fetch_rcv1
 from scipy import sparse
 from scipy.sparse import csr_matrix
+from keras.utils import to_categorical
 import numpy as np
 
 def import_data():
@@ -42,7 +43,7 @@ def data_set_sparse(sparse_data):
 
 	return train_x, train_y, test_x, test_y
 
-def dense_data_generator(x_data,y_data,T = None, one_hot = False):
+def dense_data_generator(x_data,y_data,T):
 	"""args: data must be csr form
 	While T is None and one_hot is True, it returns line by line. Specifically for 
 	neural nets training"""
@@ -55,35 +56,38 @@ def dense_data_generator(x_data,y_data,T = None, one_hot = False):
 	shuffled_x = x_data[shuffled_ind,:]
 	shuffled_y = y_data[shuffled_ind,:]
 
-	if T is not None:
-		row_per_update = n_rows // T
-		batch = [row_per_update*i for i in range(T)]
-	else: 
-		row_per_update = 1
-		batch = range(n_rows)
-	
+	row_per_update = n_rows // T
+	batch = [row_per_update*i for i in range(T)]
+
 	for i in batch:
-		#print(i)
 		sub_x = shuffled_x[i:(i+row_per_update),:]
 		sub_y = shuffled_y[i:(i+row_per_update),:]
 
-		if T is None and one_hot is True:
-			print(sub_y.toarray().reshape(-1)[0])
-			if sub_y.toarray().reshape(-1)[0] == -1:
-				print(np.array([1,0]).shape)
-				yield (sub_x.toarray(), np.array([1,0]))
-				# onehot_y = np.array([1,0])
-			elif sub_y.toarray().reshape(-1)[0] == 1:
-				print(np.array([0,1]).shape)
-				yield (sub_x.toarray(), np.array([0,1]))
+		yield (sub_x.toarray(),sub_y.toarray())
 
-			# 	onehot_y = np.array([0,1])
-			# print("shape",onehot_y.shape)
-			# yield (sub_x.toarray(),onehot_y)
+def onehot_data_generator(x_data,y_data):
+	"""args: data must be csr form
+	While T is None and one_hot is True, it returns line by line. Specifically for 
+	neural nets training"""
 
+	# shuffle the data
+	# print(type(csr_data.get_shape()[0]))
+	n_rows = x_data.get_shape()[0]
+	shuffled_ind = np.array(range(n_rows))
+	np.random.shuffle(shuffled_ind)
+	shuffled_x = x_data[shuffled_ind,:]
+	shuffled_y = y_data[shuffled_ind,:]
 
-		else:
-			yield (sub_x.toarray(),sub_y.toarray())
+	shuffled_y = to_categorical(shuffled_y.toarray())
+	print(shuffled_y)
+	
+	for i in range(n_rows):
+		#print(i)
+		sub_x = shuffled_x[i,:]
+		sub_y = shuffled_y[i,:]
+
+		print(sub_y.shape)
+		yield (sub_x.toarray(),sub_y)
 
 
 
