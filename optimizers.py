@@ -3,8 +3,8 @@
 import numpy as np
 from data_import import *
 import tensorflow as tf
+import random
 # from accuracy import *
-
 
 def get_accuracy(x,y,w):
 	'''
@@ -12,8 +12,9 @@ def get_accuracy(x,y,w):
 	y: m x 1 label as csr_matrix
 	w: d x 1 weights as numpy array
 	'''
-
-	return round(int(sum(x.multiply(w.reshape(-1)).sum(1)>0))/x.shape[0],2)
+	y = y.toarray()
+	pos = np.where(np.multiply(x*w,y)>0)
+	return round(int(len(pos[0]))/x.shape[0],2)
 
 
 def PEGASOS_old(train_x,train_y,T,lamb,test_x,test_y):
@@ -55,7 +56,7 @@ def PEGASOS_old(train_x,train_y,T,lamb,test_x,test_y):
 
 
 
-def PEGASOS(data_gen, lamb, test_x, test_y, n_features):
+def PEGASOS_old2(data_gen, lamb, test_x, test_y, n_features):
 	# lamb would be chosen from 0.0001, 0.001, 0.01, 0.1, 1, 10, 100
 
 	# initialize a w with normal of std = 0.01
@@ -91,6 +92,30 @@ def PEGASOS(data_gen, lamb, test_x, test_y, n_features):
 	acc = get_accuracy(test_x,test_y,w)
 	print("Last test accuracy is: "+str(acc))
 	
+	return w
+	
+def PEGASOS(train_x,train_y,T,k,lamb,test_x,test_y):
+	# lamb would be chosen from 0.0001, 0.001, 0.01, 0.1, 1, 10, 100
+
+	# initialize a w with normal of std = 0.01
+	w = 0.01*np.random.randn(train_x.shape[1],1)/np.sqrt(lamb) # start with very small numbers with mean of 0
+	acc_test = get_accuracy(test_x,test_y,w)
+	print("Initial test accuracy is: "+str(acc_test))
+	train_y_array = train_y.toarray()
+	for i in range(1,T+1):
+		I = random.sample(range(1,train_x.shape[0]),k)
+		A_plus = np.where(np.multiply(train_x[I]*w,train_y_array[I])<1)
+		lr = 1/(i*lamb)
+		w = (1-lr*lamb)*w+(lr/k)*train_x[np.array(I)[A_plus[0].tolist()]].T*train_y_array[np.array(I)[A_plus[0].tolist()]]
+		w = np.minimum(1,1/np.sqrt(lamb)/np.sqrt(sum([j**2 for j in w])))*w
+		
+		if i%100==0:
+			print(str(i)+" Iterations Completed.")
+			acc_train = get_accuracy(train_x,train_y,w)
+			acc_test = get_accuracy(test_x,test_y,w)
+			print("Current train accuracy is: "+str(acc_train))
+			print("Current test accuracy is: "+str(acc_test))
+
 	return w
 
 
