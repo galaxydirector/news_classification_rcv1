@@ -7,29 +7,29 @@ model_folder = "/home/aitrading/Desktop/google_drive/Course_Work/ESE545/Project2
 sparse_data = import_data()
 train_x, train_y, test_x, test_y = data_set_sparse(sparse_data)
 
-# produce a list of parameters
-# iterate three nb_layers
-param_list = []
-n_filters = 100
 samples_per_batch = 2000
 iterations = 100000// samples_per_batch
-for nb_layer in range(1,7): # no more than 6 layers
-	model_params = {'input_shape': (1,train_x.shape[1]),
-				'nb_filters': n_filters,
-				'nb_layers': nb_layer}
-
-
+# produce a list of parameters
+# iterate three nb_layers
 # param_list = []
-# filter_list = [50,100,150,300,500]
-# nb_layer = 5
-# for nb_filters in filter_list: # no more than 6 layers
-# 	model_params = {'input_shape': (),
+# nb_filters = 100
+# for nb_layer in range(1,7): # no more than 6 layers
+# 	model_params = {'input_shape': (1,train_x.shape[1]),
 # 				'nb_filters': nb_filters,
-# 				'nb_layers': 5}
-# 	# param_list.append(model_params)
+# 				'nb_layers': nb_layer}
+# 	test_name = '{}layers_{}filters'.format(nb_layer,nb_filters)
+
+param_list = []
+filter_list = [50,100,150,300,500]
+nb_layer = 4
+for nb_filters in filter_list: # no more than 6 layers
+	model_params = {'input_shape': (1,train_x.shape[1]),
+				'nb_filters': nb_filters,
+				'nb_layers': nb_layer}
+	# param_list.append(model_params)
 
 
-	test_name = '{}layers_{}filters'.format(nb_layer,n_filters)
+	test_name = '{}filters{}layers_'.format(nb_filters,nb_layer)
 
 	# set up model
 	model = MLP(model_params).model

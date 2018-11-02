@@ -27,7 +27,7 @@ class MLP(object):
 		out = input
 
 		for _ in range(nb_layers):
-			out = Dense(nb_filters, activation='tanh')(out)
+			out = Dense(nb_filters, activation='relu')(out)
 
 		# out = Dense(output_classes, activation='softmax')(out)
 		out = Dense(1)(out)
