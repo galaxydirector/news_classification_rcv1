@@ -15,7 +15,7 @@ s = time.time()
 T = 100
 k = 100
 lamb = 0.0001
-numpy = True # so that use tensorflow
+numpy = True # True to use Numpy, otherwise Tensorflow
 # w = PEGASOS(train_x,train_y,T,lamb,test_x,test_y)
 # initialize the generator
 data_gen = dense_data_generator(train_x,train_y,T)

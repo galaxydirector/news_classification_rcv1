@@ -13,7 +13,7 @@ train_x, train_y, test_x, test_y = data_set_sparse(sparse_data)
 # iterate three nb_layers
 param_list = []
 for nb_layer in range(1,2): # no more than 6 layers
-	model_params = {'input_shape': (1,train_x.shape[1]),
+	model_params = {'input_shape': (train_x.shape[1],),
 				'nb_filters': 100,
 				'nb_layers': nb_layer,
 				'output_classes': 2}
@@ -35,16 +35,16 @@ for nb_layer in range(1,2): # no more than 6 layers
 	# 	verbose=1, 
 	# 	batch_size=32,
 	# 	callbacks = callback_list)
-	generator = dense_data_generator(train_x,train_y)
+	generator = dense_data_generator(train_x,train_y, T = None, one_hot=True)
 
 
 	model.fit_generator(generator, 
-		steps_per_epoch=2000, 
+		steps_per_epoch=10000, 
 		epochs=5, 
 		verbose=1, 
 		callbacks=None,
-		max_queue_size=4, 
-		workers=3, 
+		max_queue_size=32, 
+		workers=1, 
 		use_multiprocessing=False)
 
 # ####################################################
