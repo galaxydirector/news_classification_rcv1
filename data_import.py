@@ -42,8 +42,9 @@ def data_set_sparse(sparse_data):
 
 	return train_x, train_y, test_x, test_y
 
-def dense_data_generator(x_data,y_data,T):
-	"""args: data must be csr form"""
+def dense_data_generator(x_data,y_data,T = None):
+	"""args: data must be csr form
+	While """
 
 	# shuffle the data
 	# print(type(csr_data.get_shape()[0]))
@@ -53,10 +54,13 @@ def dense_data_generator(x_data,y_data,T):
 	shuffled_x = x_data[shuffled_ind,:]
 	shuffled_y = y_data[shuffled_ind,:]
 
-	row_per_update = n_rows // T
-	#row_per_update = batch_size
-	batch = [row_per_update*i for i in range(T)]
-
+	if T is not None:
+		row_per_update = n_rows // T
+		batch = [row_per_update*i for i in range(T)]
+	else: 
+		row_per_update = n_rows
+		batch = range(n_rows)
+	
 	for i in batch:
 		#print(i)
 		sub_x = shuffled_x[i:(i+row_per_update),:]

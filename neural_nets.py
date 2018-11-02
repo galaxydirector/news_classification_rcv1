@@ -9,18 +9,15 @@ from keras.layers import Input, merge, Dense, BatchNormalization, Activation, Dr
 from keras.callbacks import ModelCheckpoint, TensorBoard, EarlyStopping
 from keras.callbacks import ReduceLROnPlateau, ModelCheckpoint, CSVLogger, TensorBoard
 
-model_params = {'input_shape': (),
-				'nb_filters': 100,
-				'nb_layers': nb_layer,
-				'output_classes': 2 }
+# model_params = {'input_shape': (),
+# 				'nb_filters': 100,
+# 				'nb_layers': nb_layer,
+# 				'output_classes': 2 }
 
 class MLP(object):
-    def __init__(self,
-		    	**model_params):
-
+	def __init__(self, model_params):
 		x, y = self.build_model(**model_params)
 		self.model = Model(inputs=x, outputs=y)
-
 
 	def build_model(self,
 					  input_shape,
