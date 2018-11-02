@@ -26,14 +26,22 @@ model.compile(optimizer='adagrad',
 callback_list = prepare_callbacks(
 		model_folder, 
 		test_name)
-model.fit(data, 
-	one_hot_labels, 
-	epochs=10, 
+# model.fit(data, 
+# 	one_hot_labels, 
+# 	epochs=10, 
+# 	verbose=1, 
+# 	batch_size=32,
+# 	callbacks = callback_list)
+generator = dense_data_generator(train_x,train_y,T)
+
+model.fit_generator(generator, 
+	steps_per_epoch=None, # set at generator T iterations
+	epochs=5, 
 	verbose=1, 
-	batch_size=32,
-	callbacks = callback_list)
-
-
+	callbacks=None,
+	max_queue_size=32, 
+	workers=3, 
+	use_multiprocessing=False)
 
 ####################################################
 # produce a list of parameters
