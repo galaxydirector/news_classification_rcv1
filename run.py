@@ -13,17 +13,19 @@ print("Datasets Imported. Time: "+str(int(time.time()-start))+" seconds.")
 s = time.time()
 # PEGASOS with minibatch
 T = 100
-k = 100
+k = 1000
 lamb = 0.0001
 numpy = True # True to use Numpy, otherwise Tensorflow
 # w = PEGASOS(train_x,train_y,T,lamb,test_x,test_y)
 # initialize the generator
-data_gen = dense_data_generator(train_x,train_y,T)
-if numpy:
-	w = PEGASOS(train_x,train_y,T,k,lamb,test_x,test_y)
-else:
-	w = PEGASOS_tf(data_gen, lamb, n_features = train_x.get_shape()[1])
+#data_gen = dense_data_generator(train_x,train_y,T)
+#if numpy:
+#	w = PEGASOS(train_x,train_y,T,k,lamb,test_x,test_y)
+#else:
+#	w = PEGASOS_tf(data_gen, lamb, n_features = train_x.get_shape()[1])
+
+w = adagrad(train_x,train_y,T,k,lamb,test_x,test_y)
 	
-print("PEGASOS Completed. Time: "+str(int(time.time()-s))+" seconds.")
+#print("PEGASOS Completed. Time: "+str(int(time.time()-s))+" seconds.")
 
 

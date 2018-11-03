@@ -4,6 +4,7 @@ import numpy as np
 from data_import import *
 import tensorflow as tf
 import random
+import math
 # from accuracy import *
 
 def get_accuracy(x,y,w):
@@ -120,21 +121,41 @@ def PEGASOS(train_x,train_y,T,k,lamb,test_x,test_y):
 
 
 
-
-
-
-
-
-
-
-
-
-def adagrad(w, prediction, target, lr):
+def adagrad(train_x,train_y,T,k,lamb,test_x,test_y):
 	"""
 	lr = 1/sqrt(T)
 	"""
+	m,d = train_x.shape
+	print(m)
+	print(d)
+	w = np.zeros((d,1))
+	S = np.ones((d,1))
+	#lr = 1/np.sqrt(T)
+	#print(lr)
 
-	return
+	train_y_array = train_y.toarray()
+	for t in range(1,T+1):
+		lr = 1/(t*lamb)
+		I = random.sample(range(1,m),k)
+		sub_x = train_x[I]
+		sub_y = train_y[I].toarray()
+		# not sure if it is 0 or 1		
+		A_plus = np.where(np.multiply(sub_x*w,sub_y)<1)
+		gradient = -1/k*sub_x[A_plus[0].tolist()].T*sub_y[A_plus[0].tolist()]
+		for i in range(0,d):
+			w[i] = w[i] - lr/np.sqrt(S[i])*gradient[i]
+			S[i] = S[i]+(gradient[i])*(gradient[i])
+		w = min(1.0,1.0/math.sqrt(lamb*(S*np.square(w)).sum()))*w
+		if t%1 == 0:
+			print(str(t)+" Iterations Completed.")
+			acc_train = get_accuracy(train_x,train_y,w)
+			acc_test = get_accuracy(test_x,test_y,w)
+			print("Current train accuracy is: "+str(acc_train))
+			print("Current test accuracy is: "+str(acc_test))
+
+
+
+	return w
 
 
 
