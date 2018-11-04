@@ -64,8 +64,9 @@ def dense_data_generator(x_data,y_data,iterations):
 		for i in batch:
 			sub_x = shuffled_x[i:(i+row_per_update),:]
 			sub_y = shuffled_y[i:(i+row_per_update),:]
+			sub_y = np.add(sub_y.toarray(),1)/2
 
-			yield (sub_x.toarray().reshape(row_per_update,-1,n_cols),sub_y.toarray().reshape(row_per_update,-1,1))
+			yield (sub_x.toarray().reshape(row_per_update,-1,n_cols),sub_y.reshape(row_per_update,-1,1))
 
 # def singleline_data_generator(x_data,y_data):
 # 	"""args: data must be csr form

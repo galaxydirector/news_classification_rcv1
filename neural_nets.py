@@ -41,7 +41,7 @@ def prepare_callbacks(model_folder, test_name, use_adaptive_optimzer=True):
 	    os.makedirs(model_directory)
 
 	saved_model_path = os.path.join(*[model_directory,"weights_{epoch:05d}.hdf5"])
-	csv_log_path = os.path.join(*[model_directory,"training_log.csv"])
+	csv_log_path = os.path.join(*[model_directory,"{}_log.csv".format(test_name)])
 
 	save_chkpt = ModelCheckpoint(
 		saved_model_path,
